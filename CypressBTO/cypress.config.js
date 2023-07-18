@@ -1,8 +1,10 @@
 const { defineConfig } = require("cypress");
 
 module.exports = defineConfig({
+
   e2e: {
-    baseUrl: 'https://account.btoprod.com',
-    requestTimeout: 10000
-  },
+    baseUrl: 'https://b2c.btoprod.com',
+    requestTimeout: 10000,
+    experimentalModifyObstructiveThirdPartyCode: true
+    },
 });

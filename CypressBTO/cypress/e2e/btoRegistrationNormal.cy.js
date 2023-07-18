@@ -1,16 +1,42 @@
 /// <reference types="Cypress"/>
 
+// ***********************************************
+// This spec will test Registration in BTO
+// ***********************************************
+//
 
-describe('BTO Automation Exam', () => {
+import { CUSTOM_CONSTANTS } from "../support/constants"
+
+describe('BTO Normal Registration', () => {
+
+    // dynamic email variable
+    let email
+
     // Run each for each test case
     beforeEach(() => {
-        cy.visit('/register-c/get-started')       
+
+        // constant value variable
+        email = CUSTOM_CONSTANTS.CM_CONS_MARIA + '_' + new Date().toISOString().replaceAll(':','') + '@yahoo.com'
+        const newUrl = 'https://account.btoprod.com/register-c/get-started'
+
+        // Go to Main Page
+        cy.visit('/') 
+        cy.window().then(win => {
+            cy.stub(win, 'open').as('windowOpen')
+        })
+
+        // Click Create Account button
+        cy.get('[translate="fo.lbl.createaccountforfree"]').contains('Create account').click()
+
+        // Change the location so it will not open a new tab
+        cy.get('@windowOpen').should('be.called', newUrl)
+        cy.window().then(win => {
+            win.location.href = newUrl
+        })
+        
     })
 
-    // For unique email to avoid duplicate record
-    const email = new Date().toISOString().replaceAll(':','') + '@yahoo.com'
-
-    it.skip('Email Validation', () => {
+    it('Email Validation', () => {
 
         /** For above email and button */
         // Checks no value
@@ -22,22 +48,12 @@ describe('BTO Automation Exam', () => {
         cy.get('#btn__submit').click()
         cy.get('#mat-error-0').contains('Email address is required.')
 
-        /** For below email and button */
-        // Checks no value
-        //cy.get('.form__container').get('#btn__submit').click()
-        //cy.get('.form__container').get('#mat-error-0').last().contains('Email address is required.')
-        
-        // Checks for spaces only
-        //cy.get('[name="input__email"]').last().type(' ')
-        //cy.get('.form__container').get('#btn__submit').last().click()
-        //cy.get('.form__container').get('#mat-error-0').last().contains('Email address is required.')
-
     })
 
-    it.skip('Click "Get Started" button, Validate Password', () => {
+    it('Click "Get Started" button, Validate Password', () => {
 
         // Input correct email address
-        cy.get('[name="input__email"]').first().type('test@yahoo.com')
+        cy.get('[name="input__email"]').first().type(CUSTOM_CONSTANTS.CM_CONS_MARIA_MAKILING_YAHOO)
         cy.get('#btn__submit').click()
 
         // Checks for the correct url for password
@@ -74,17 +90,17 @@ describe('BTO Automation Exam', () => {
 
     })
 
-    it.skip('Click "Looks Good" button, Validate Name', () => {
+    it('Click "Looks Good" button, Validate Name', () => {
 
         // Input correct email address
-        cy.get('[name="input__email"]').first().type('test@yahoo.com')
+        cy.get('[name="input__email"]').first().type(CUSTOM_CONSTANTS.CM_CONS_MARIA_MAKILING_YAHOO)
         cy.get('#btn__submit').click()
 
         // Checks for the correct url for password
         cy.url().should('include','/register-c/password')
 
         // Input valid password
-        cy.get('[name="input__password"]').type('WIFIgn9!')
+        cy.get('[name="input__password"]').type(CUSTOM_CONSTANTS.CM_CONS_WIFIGN9)
         cy.get('#btn__submit').click()
 
         // Checks for the correct url for names
@@ -137,24 +153,24 @@ describe('BTO Automation Exam', () => {
         
     })
 
-    it.skip('Duplicate Account', () => {
+    it('Duplicate Account', () => {
 
         // Input correct email address but a duplicate
-        cy.get('[name="input__email"]').first().type('test@yahoo.com')
+        cy.get('[name="input__email"]').first().type(CUSTOM_CONSTANTS.CM_CONS_MARIA_MAKILING_YAHOO)
         cy.get('#btn__submit').click()
 
         // Checks for the correct url for password
         cy.url().should('include','/register-c/password')
 
         // Input valid password
-        cy.get('[name="input__password"]').type('WIFIgn9!')
+        cy.get('[name="input__password"]').type(CUSTOM_CONSTANTS.CM_CONS_WIFIGN9)
         cy.get('#btn__submit').click()
 
         // Checks for the correct url for names
         cy.url().should('include','/register-c/names-b')
 
         // Input valid names
-        cy.get('[name="input__fn"]').clear().type('Maria')
+        cy.get('[name="input__fn"]').clear().type(CUSTOM_CONSTANTS.CM_CONS_MARIA)
         cy.get('[name="input__ln"]').clear().type('Niñalga')
         cy.get('#btn__submit').click()
 
@@ -163,25 +179,25 @@ describe('BTO Automation Exam', () => {
        
     })
 
-    it.skip('Validate Mobile', () => {
+    it('Validate Mobile', () => {
 
-        // Input correct email address but a duplicate
-        cy.get('[name="input__email"]').first().type('maria_makiling@yahoo.com')
+        // Input correct email address not a duplicate
+        cy.get('[name="input__email"]').first().type(email)
         cy.get('#btn__submit').click()
 
         // Checks for the correct url for password
         cy.url().should('include','/register-c/password')
 
         // Input valid password
-        cy.get('[name="input__password"]').type('WIFIgn9!')
+        cy.get('[name="input__password"]').type(CUSTOM_CONSTANTS.CM_CONS_WIFIGN9)
         cy.get('#btn__submit').click()
 
         // Checks for the correct url for names
         cy.url().should('include','/register-c/names-b')
 
         // Input valid names
-        cy.get('[name="input__fn"]').clear().type('Maria')
-        cy.get('[name="input__ln"]').clear().type('Makiling')
+        cy.get('[name="input__fn"]').clear().type(CUSTOM_CONSTANTS.CM_CONS_MARIA)
+        cy.get('[name="input__ln"]').clear().type(CUSTOM_CONSTANTS.CM_CONS_MAKILING)
         cy.get('#btn__submit').click()
 
         // Checks for the correct url for mobile
@@ -242,23 +258,62 @@ describe('BTO Automation Exam', () => {
 
     })
 
-    it.skip('********Not Done Yet Click "Back" button for all pages', () => {
+    it('Click "Back" button for all pages', () => {
 
-        // Input correct email address
-        cy.get('[name="input__email"]').first().type('test@yahoo.com')
+        // Provide email address
+        cy.get('[name="input__email"]').first().type(email)
         cy.get('#btn__submit').click()
 
-        // Checks for the correct url for password
+        // Provide password
         cy.url().should('include','/register-c/password')
+        cy.get('[name="input__password"]').type(CUSTOM_CONSTANTS.CM_CONS_WIFIGN9)
+        cy.get('#btn__submit').click()
 
+        // Provide Names
+        cy.url().should('include','/register-c/names-b')
+        cy.get('[name="input__fn"]').clear().type(CUSTOM_CONSTANTS.CM_CONS_MARIA)
+        cy.get('[name="input__ln"]').clear().type(CUSTOM_CONSTANTS.CM_CONS_MAKILING)
+        cy.get('#btn__submit').click()
+
+        // Provide mobile
+        cy.url().should('include','/register-c/mobile-verification-b')
+        cy.get('[name="input__mobile"]').type('12345678')
+        cy.get('#btn__submit').click()
+
+        // Provide One-Time Password
+        cy.get('[name="input__verification"]').type('123456')
+        
         // Click "Back" button
         cy.get('#btn__back').click()
 
         // Checks for the correct url after clicking back button
+        cy.url().should('include', '/register-c/names-b')
+        cy.get('[name="input__fn"]').invoke('val').then((el) => {
+            expect(el).to.equal(CUSTOM_CONSTANTS.CM_CONS_MARIA)
+        })
+        cy.get('[name="input__ln"]').invoke('val').then((el) => {
+            expect(el).to.equal(CUSTOM_CONSTANTS.CM_CONS_MAKILING)
+        })
+
+        cy.get('#btn__back').click()
+
+        // Checks for the correct url after clicking back button
+        cy.url().should('include', '/register-c/password')
+        cy.get('[name="input__password"]').invoke('val').then((el) => {
+            expect(el).to.equal(CUSTOM_CONSTANTS.CM_CONS_WIFIGN9)
+        })
+
+        cy.get('#btn__back').click()
+
+        // Checks for the correct url after clicking back button
         cy.url().should('include', '/register-c/get-started')
+        cy.get('[name="input__email"]').invoke('val').then((el) => {
+            expect(el).to.equal(email)
+        })
+            
     })
 
-    it.skip('Happy Flow: Consent is Yes, Mobile Country is Default', () => {
+    it('Happy Flow: Consent is Yes, Mobile Country is Default', () => {
 
         // Input correct email address but a duplicate
         cy.get('[name="input__email"]').first().type(email)
@@ -268,15 +323,15 @@ describe('BTO Automation Exam', () => {
         cy.url().should('include','/register-c/password')
 
         // Input valid password
-        cy.get('[name="input__password"]').type('WIFIgn9!')
+        cy.get('[name="input__password"]').type(CUSTOM_CONSTANTS.CM_CONS_WIFIGN9)
         cy.get('#btn__submit').click()
 
         // Checks for the correct url for names
         cy.url().should('include','/register-c/names-b')
 
         // Input valid names
-        cy.get('[name="input__fn"]').clear().type('Maria')
-        cy.get('[name="input__ln"]').clear().type('Makiling')
+        cy.get('[name="input__fn"]').clear().type(CUSTOM_CONSTANTS.CM_CONS_MARIA)
+        cy.get('[name="input__ln"]').clear().type(CUSTOM_CONSTANTS.CM_CONS_MAKILING)
         cy.get('#btn__submit').click()
 
         // Checks for the correct url for mobile
@@ -300,7 +355,7 @@ describe('BTO Automation Exam', () => {
 
     })
 
-    it.skip('Happy Flow: Consent is No, Mobile Country is not Default', () => {
+    it('Happy Flow: Consent is No, Mobile Country is not Default', () => {
         
         // Input correct email address but a duplicate
         cy.get('[name="input__email"]').first().type(email)
@@ -310,15 +365,15 @@ describe('BTO Automation Exam', () => {
         cy.url().should('include','/register-c/password')
 
         // Input valid password
-        cy.get('[name="input__password"]').type('WIFIgn9!')
+        cy.get('[name="input__password"]').type(CUSTOM_CONSTANTS.CM_CONS_WIFIGN9)
         cy.get('#btn__submit').click()
 
         // Checks for the correct url for names
         cy.url().should('include','/register-c/names-b')
 
         // Input valid names
-        cy.get('[name="input__fn"]').clear().type('Maria')
-        cy.get('[name="input__ln"]').clear().type('Makiling')
+        cy.get('[name="input__fn"]').clear().type(CUSTOM_CONSTANTS.CM_CONS_MARIA)
+        cy.get('[name="input__ln"]').clear().type(CUSTOM_CONSTANTS.CM_CONS_MAKILING)
 
         // Uncheck consent
         cy.get('.mat-checkbox-layout').get('#consent__checkbox-input').uncheck({force:true})
@@ -343,12 +398,12 @@ describe('BTO Automation Exam', () => {
 
         // Input valid One-Time Password
         cy.get('[name="input__verification"]').type('123456')
-        cy.intercept('')
         cy.get('#btn__submit').click()
 
-        // Checks for the correct url for onboarding
+        // Checks if it went to confirmation page
         cy.url().should('include','/confirm')
         cy.wait(20000)
+        // Checks if it redirected to onboarding page
         cy.url().should('include','/onboarding-c/welcome/')
 
     })
